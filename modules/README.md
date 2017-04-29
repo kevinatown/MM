@@ -36,7 +36,7 @@ Module.register("helloworld",{
 		wrapper.innerHTML = this.config.text;
 		return wrapper;
 	}
-});
+});>
 ````
 
 As you can see, the `Module.register()` method takes two arguments: the name of the module and an object with the module properties.
