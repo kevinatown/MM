@@ -28,6 +28,7 @@ Module.register("MMM-Screencast", {
 
     socketNotificationReceived: function(notification, payload) {
     	Log.info(notification, payload);
+    	var self = this;
     	switch (notification) {
     		case 'SET-URL':
     			console.log('got the url on the front!!!');
@@ -35,8 +36,8 @@ Module.register("MMM-Screencast", {
 	    		// console.log(newurl);
 	    		// var newnew = 'http://youtube.com/embed/' + newurl[newurl.length - 1];
 	    		// console.log(newnew);
-	    		this.config.url = payload;
-	    		this.updateDom();
+	    		self.config.url = payload;
+	    		self.updateDom();
 	    		break;
 	    	default:
 	    		break;
@@ -66,12 +67,12 @@ Module.register("MMM-Screencast", {
 		// }
 		// return div;
 		const iframe = document.createElement("iframe");
-		// iframe.options = "ALLOW-FROM: http://www.youtube.com/*";
+		iframe.options = "ALLOW-FROM: http://www.youtube.com/*";
 		// iframe.sandbox="allow-scripts allow-popups allow-forms allow-top-navigation allow-same-origin";
 		iframe.width = this.config.width;
 		iframe.height = this.config.height;
 		iframe.style = "border:0";
-		iframe.src = "http://www.youtube.com/embed/"+this.config.url+"?autoplay=1";
+		iframe.src = this.config.url;
 		return iframe;
 	}
 });

@@ -30,11 +30,12 @@ var apps = {
 	    	// console.log('in launch function', launchData, f);
 	        // opn("http://www.youtube.com/tv?"+launchData);
 	        console.log(launchData);
-	        let vid = launchData.split('v=');
-	        console.log(vid);
-	        vid = vid.length > 0 ? vid[1].split('&')[0] : '';
+	        // let vid = launchData.split('v=');
+	        // console.log(vid);
+	        // vid = vid.length > 0 ? vid[1].split('&')[0] : '';
 	        // f("http://www.youtube.com/tv?"+launchData);
-	        f(vid);
+	        // f(vid);
+	        f("https://www.youtube.com/tv?"+launchData);
     	}
 	}
 };
@@ -47,9 +48,9 @@ var dialServer = new dial.Server({
 	manufacturer: MANUFACTURER,
 	modelName: MODEL_NAME,
 	launchFunction: null,
-	// extraHeaders: {
-	// 	"x-frame-options": "ALLOW-FROM: localhost:*"
-	// },
+	extraHeaders: {
+		"x-frame-options": "ALLOW-FROM: *"
+	},
 	delegate: {
 		getApp: function(appName){
 			var app = apps[appName];
