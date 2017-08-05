@@ -1,7 +1,8 @@
 var dial = require("peer-dial");
 var http = require('http');
 var express = require('express');
-var opn = require("opn");
+const { exec } = require('child_process');
+// var opn = require("opn");
 var app = express();
 // var io = require('socket.io');
 var io = require('socket.io-client');
@@ -18,24 +19,14 @@ var apps = {
 		state: "stopped",
 		allowStop: true,
 		pid: null,
-    
-    additionalData: {
-        "ex:key1":"value1",
-        "ex:key2":"value2"
-    },
-	namespaces: [
-	   "http://localhost:8080"
-	],
-	    launch: function (launchData, f) {
+	    launch: function (launchData, config) {
 	    	// console.log('in launch function', launchData, f);
 	        // opn("http://www.youtube.com/tv?"+launchData);
-	        console.log(launchData);
-	        // let vid = launchData.split('v=');
-	        // console.log(vid);
-	        // vid = vid.length > 0 ? vid[1].split('&')[0] : '';
-	        // f("http://www.youtube.com/tv?"+launchData);
-	        // f(vid);
-	        f("https://www.youtube.com/embed/tv?"+launchData);
+	        console.log(launchData, config);
+	        var url = "http://www.youtube.com/tv?"+launchData;
+	        var args = [url, config.position, config.width, config.height].join(' ');
+	        console.log(args);
+	        exec('cd modules/MMM-Screencast; npm start '+ args);
     	}
 	}
 };
@@ -48,6 +39,7 @@ var dialServer = new dial.Server({
 	manufacturer: MANUFACTURER,
 	modelName: MODEL_NAME,
 	launchFunction: null,
+	electronConfig: {},
 	extraHeaders: {
 		"x-frame-options": "GOFORIT"
 	},
@@ -65,7 +57,7 @@ var dialServer = new dial.Server({
 			if (app) {
 				app.pid = "run";
 				app.state = "starting";
-                app.launch(lauchData, dialServer.launchFunction);
+                app.launch(lauchData, dialServer.electronConfig);
                 // dialServer.launchFunction("http://www.youtube.com/tv?"+lauchData);
                 app.state = "running";
 			}
@@ -77,7 +69,7 @@ var dialServer = new dial.Server({
 			if (app && app.pid == pid) {
 				app.pid = null;
 				app.state = "stopped";
-				dialServer.launchFunction('');
+				// dialServer.launchFunction('');
 				callback(true);
 			}
 			else {
@@ -89,20 +81,22 @@ var dialServer = new dial.Server({
 
 var App = function() {
 	// app.use("/", function(res,request,))
+	this.config = {};
 
 	this.server = http.createServer(app);
 
-	this.start = function() {
-		var socket = io.connect('http://localhost:8080', {reconnect: true});
-		socket.on('connected', function() { 
-  			console.log('Connected!');
-		});
-		const setUrl = function(url) {
-			socket.emit('seturl', url);
-			console.log('seturl', url);
-		};
-		
-		dialServer.launchFunction = setUrl;
+	this.start = function(config) {
+		console.log('ds app conf', config);
+		// var socket = io.connect('http://localhost:8080', {reconnect: true});
+		// socket.on('connected', function() { 
+  // 			console.log('Connected!');
+		// });
+		// const setUrl = function(url) {
+		// 	socket.emit('seturl', url);
+		// 	console.log('seturl', url);
+		// };
+		dialServer.electronConfig = config;
+		// dialServer.launchFunction = setUrl;
 		this.server.listen(PORT,function(){
 			dialServer.start();
 			console.log("DIAL Server is running on PORT "+PORT);
