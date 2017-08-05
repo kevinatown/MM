@@ -67,7 +67,7 @@ Module.register("MMM-Screencast", {
 		// }
 		// return div;
 		const iframe = document.createElement("iframe");
-		iframe.options = "ALLOW-FROM: http://www.youtube.com/*";
+		// iframe.options = "ALLOW-FROM: http://www.youtube.com/*";
 		// iframe.sandbox="allow-scripts allow-popups allow-forms allow-top-navigation allow-same-origin";
 		iframe.width = this.config.width;
 		iframe.height = this.config.height;

@@ -18,14 +18,14 @@ var apps = {
 		state: "stopped",
 		allowStop: true,
 		pid: null,
-    /*
+    
     additionalData: {
         "ex:key1":"value1",
         "ex:key2":"value2"
     },
-    namespaces: {
-       "ex": "urn:example:org:2014"
-    }*/
+	namespaces: {
+	   "ex":  "http://localhost:8080"
+	},
 	    launch: function (launchData, f) {
 	    	// console.log('in launch function', launchData, f);
 	        // opn("http://www.youtube.com/tv?"+launchData);
