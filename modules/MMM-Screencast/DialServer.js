@@ -23,9 +23,9 @@ var apps = {
         "ex:key1":"value1",
         "ex:key2":"value2"
     },
-	namespaces: {
-	   "ex":  "http://localhost:8080"
-	},
+	namespaces: [
+	   "http://localhost:8080"
+	],
 	    launch: function (launchData, f) {
 	    	// console.log('in launch function', launchData, f);
 	        // opn("http://www.youtube.com/tv?"+launchData);
@@ -35,13 +35,13 @@ var apps = {
 	        // vid = vid.length > 0 ? vid[1].split('&')[0] : '';
 	        // f("http://www.youtube.com/tv?"+launchData);
 	        // f(vid);
-	        f("https://www.youtube.com/tv?"+launchData);
+	        f("https://www.youtube.com/embed/tv?"+launchData);
     	}
 	}
 };
 var dialServer = new dial.Server({
 // module.exports = new dial.Server({
-	corsAllowOrigins: "*",
+	corsAllowOrigins: true,
 	expressApp: app,
 	port: PORT,
 	prefix: "/dial",
@@ -49,7 +49,7 @@ var dialServer = new dial.Server({
 	modelName: MODEL_NAME,
 	launchFunction: null,
 	extraHeaders: {
-		"x-frame-options": "ALLOW-FROM: *"
+		"x-frame-options": "GOFORIT"
 	},
 	delegate: {
 		getApp: function(appName){
@@ -88,6 +88,8 @@ var dialServer = new dial.Server({
 });
 
 var App = function() {
+	// app.use("/", function(res,request,))
+
 	this.server = http.createServer(app);
 
 	this.start = function() {
