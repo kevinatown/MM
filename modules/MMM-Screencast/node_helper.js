@@ -3,22 +3,8 @@ module.exports = NodeHelper.create({
 	config: {},
 
 	start: function() {
-		console.log(this);
-		console.log('config', this.config);
-		// this.io.on('connection', function(socket){
-		// 	console.log('socket connected');
-		// 	socket.emit('connected');
-  // 			socket.on('seturl', function(data) { 
-  // 				console.log('seturl! in connected', data);
-  // 				this.sendSocketNotification("SET-URL", data);
-  // 				// this.sendSocket
-		// 	}.bind(this));
-		// }.bind(this));
-	},
-
-	sendSocket: function(url) {
-		console.log('attempting to get url', s.getUrl);
-		this.sendSocketNotification("SET-URL", url);
+		// console.log(this);
+		// console.log('config', this.config)
 	},
 
 	socketNotificationReceived: function(notification, payload) {
@@ -26,7 +12,8 @@ module.exports = NodeHelper.create({
 		switch (notification) {
 			case 'SET_CONFIG':
 				this.config = payload;
-				this.dialServer.start(payload);
+				this.dialServer.start(this.mainWindow, payload);
+				console.log(this.mainWindow());
 				break;
 			default:
 				break;

@@ -1,13 +1,17 @@
 var dial = require("peer-dial");
 var http = require('http');
 var express = require('express');
-var { exec, spawn } = require('child_process');
+var { spawn } = require('child_process');
+var ipc = require('node-ipc');
+ipc.config.id = 'screenCastDIAL';
+ipc.config.retry = 1000;
 var app = express();
 var server = http.createServer(app);
 var PORT = 8569;
 // var PORT = 8080;
 var MANUFACTURER = "Kevin Townsend";
 var MODEL_NAME = "DIAL Server";
+var mainWindow;
 var child = null;
 
 var apps = {
@@ -31,6 +35,14 @@ var apps = {
 			});
 			child.on('close', function(code) {
 			    console.log('closing code: ' + code);
+			});
+			ipc.connectTo('screenCastWindow',() => {
+				ipc.of.screenCastWindow.on('connect',() => {
+            		ipc.of.screenCastWindow.emit('set_mainWindow', { mainWindow: mainWindow });
+        		});
+        		ipc.of.screenCastWindow.on('quit', () => {
+        			ipc.disconnect('screenCastWindow');
+        		});
 			});
     	}
 	}
@@ -71,16 +83,20 @@ var dialServer = new dial.Server({
 		},
 		stopApp: function(appName,pid,callback){
             console.log("Got request to stop", appName," with pid: ", pid);
-            // child.stdin.pause();
-			// child.kill('SIGKILL');
-			process.kill(child.pid, 'SIGKILL');
+
 			var app = apps[appName];
 			if (app && app.pid == pid) {
 				app.pid = null;
 				app.state = "stopped";
-				// child.stdin.pause();
-				// child.kill();
-				// child.kill();
+				ipc.connectTo('screenCastWindow',() => {
+    				ipc.of.screenCastWindow.on('connect',() => {
+                		ipc.of.screenCastWindow.emit('quit');
+            		});
+            		ipc.of.screenCastWindow.on('quit', () => {
+            			ipc.disconnect('screenCastWindow');
+            		});
+    			});
+    			child = null;
 				callback(true);
 			}
 			else {
@@ -96,18 +112,10 @@ var App = function() {
 
 	this.server = http.createServer(app);
 
-	this.start = function(config) {
-		console.log('ds app conf', config);
-		// var socket = io.connect('http://localhost:8080', {reconnect: true});
-		// socket.on('connected', function() { 
-  // 			console.log('Connected!');
-		// });
-		// const setUrl = function(url) {
-		// 	socket.emit('seturl', url);
-		// 	console.log('seturl', url);
-		// };
+	this.start = function(mainWindowCallback, config) {
+		mainWindow = mainWindowCallback();
+		console.log(mainWindow);
 		dialServer.electronConfig = config;
-		// dialServer.launchFunction = setUrl;
 		this.server.listen(PORT,function(){
 			dialServer.start();
 			console.log("DIAL Server is running on PORT "+PORT);

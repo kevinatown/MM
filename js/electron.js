@@ -100,6 +100,6 @@ app.on("activate", function() {
 
 // Start the core application.
 // This starts all node helpers and starts the webserver.
-core.start(function(c) {
+core.start(function() { return mainWindow; }, function(c) {
 	config = c;
 });

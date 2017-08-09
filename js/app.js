@@ -150,7 +150,8 @@ var App = function() {
 	 *
 	 * argument callback function - The callback function.
 	 */
-	this.start = function(callback) {
+	this.start = function(mainWindowCallback, callback) {
+		console.log(callback);
 
 		loadConfig(function(c) {
 			config = c;
@@ -173,6 +174,7 @@ var App = function() {
 					var nodeHelper = nodeHelpers[h];
 					nodeHelper.setExpressApp(app);
 					nodeHelper.setSocketIO(io);
+					nodeHelper.setMainWindow(mainWindowCallback);
 					nodeHelper.start();
 				}
 
