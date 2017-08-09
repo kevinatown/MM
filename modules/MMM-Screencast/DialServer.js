@@ -1,18 +1,15 @@
 var dial = require("peer-dial");
 var http = require('http');
 var express = require('express');
-const { exec } = require('child_process');
-// var opn = require("opn");
+var { exec, spawn } = require('child_process');
 var app = express();
-// var io = require('socket.io');
-var io = require('socket.io-client');
-var events = require('events');
-var serverEmitter = new events.EventEmitter();
 var server = http.createServer(app);
 var PORT = 8569;
 // var PORT = 8080;
 var MANUFACTURER = "Kevin Townsend";
 var MODEL_NAME = "DIAL Server";
+var child = null;
+
 var apps = {
 	"YouTube": {
 		name: "YouTube",
@@ -20,16 +17,25 @@ var apps = {
 		allowStop: true,
 		pid: null,
 	    launch: function (launchData, config) {
-	    	// console.log('in launch function', launchData, f);
-	        // opn("http://www.youtube.com/tv?"+launchData);
-	        console.log(launchData, config);
 	        var url = "http://www.youtube.com/tv?"+launchData;
-	        var args = [url, config.position, config.width, config.height].join(' ');
-	        console.log(args);
-	        exec('cd modules/MMM-Screencast; npm start '+ args);
+	        var args = [ url, config.position, config.width, config.height].join(' ');
+	        // child = exec("cd modules/MMM-Screencast; npm start "+"'"+args+"'");
+	        child = spawn('npm', ['start', url, config.position, config.width, config.height], {
+  				cwd: 'modules/MMM-Screencast'
+			})
+			child.stdout.on('data', function(data) {
+			    console.log('screencast stdout: ' + data);
+			});
+			child.stderr.on('data', function(data) {
+			    console.log('screencast stderr: ' + data);
+			});
+			child.on('close', function(code) {
+			    console.log('closing code: ' + code);
+			});
     	}
 	}
 };
+
 var dialServer = new dial.Server({
 // module.exports = new dial.Server({
 	corsAllowOrigins: true,
@@ -65,11 +71,16 @@ var dialServer = new dial.Server({
 		},
 		stopApp: function(appName,pid,callback){
             console.log("Got request to stop", appName," with pid: ", pid);
+            // child.stdin.pause();
+			// child.kill('SIGKILL');
+			process.kill(child.pid, 'SIGKILL');
 			var app = apps[appName];
 			if (app && app.pid == pid) {
 				app.pid = null;
 				app.state = "stopped";
-				// dialServer.launchFunction('');
+				// child.stdin.pause();
+				// child.kill();
+				// child.kill();
 				callback(true);
 			}
 			else {

@@ -30,6 +30,7 @@ function createWindow() {
 			zoomFactor: config.zoom
 		}
 	}
+	// console.log('main electron config', config);
 
 	// DEPRECATED: "kioskmode" backwards compatibility, to be removed
 	// settings these options directly instead provides cleaner interface
@@ -41,6 +42,7 @@ function createWindow() {
 	}
 
 	var electronOptions = Object.assign({}, electronOptionsDefaults, config.electronOptions);
+	// console.log(electronOptions);
 
 	// Create the browser window.
 	mainWindow = new BrowserWindow(electronOptions);

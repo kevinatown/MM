@@ -3,6 +3,7 @@ module.exports = NodeHelper.create({
 	config: {},
 
 	start: function() {
+		console.log(this);
 		console.log('config', this.config);
 		// this.io.on('connection', function(socket){
 		// 	console.log('socket connected');
