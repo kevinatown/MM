@@ -37,10 +37,10 @@ app.once('ready', function () {
     // Set the initial height to 400px
     height: height,
     darkTheme: true,
-    parent: mainWindow,
     alwayOnTop: true,
     show: false,
-    frame: false
+    frame: false,
+    zoomFactor: 1.0;
   })
 
   var positioner = new Positioner(window)
