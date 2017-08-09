@@ -4,19 +4,12 @@ const ipc = require('node-ipc');
 ipc.config.id = 'screenCastWindow';
 ipc.config.retry= 1500;
 
-var window = null;
-var mainWindow = null;
 var url = process.argv[2];
 var position = process.argv[3]
-var width = process.argv[4]
-var height = process.argv[5]
+var width = parseInt(process.argv[4], 10)
+var height = parseInt(process.argv[5], 10)
 
 ipc.serve(() => {
-  ipc.server.on('set_mainWindow', (data, socket) => {
-    mainWindow = data.mainWindow;
-    console.log(mainWindow);
-    ipc.server.emit(socket, 'quit');
-  });
   ipc.server.on('quit', (data, socket) => {
     ipc.server.emit(socket, 'quit');
     app.quit();
@@ -28,34 +21,36 @@ ipc.server.start();
 
 // Wait until the app is ready
 const app = electron.app;
+
 app.once('ready', function () {
   // Create a new window
   // console.log(electron.dialog.showErrorBox('hello', process.argv.join(' ')))
-  window = new electron.BrowserWindow({
-    // Set the initial width to 500px
+
+  const windowOptions = {
+    maxHeight: height,
+    maxWidth: width,
+    resize: false,
     width: width,
-    // Set the initial height to 400px
     height: height,
     darkTheme: true,
     alwayOnTop: true,
     show: false,
     frame: false,
     zoomFactor: 1.0,
-  })
+  };
 
-  var positioner = new Positioner(window)
+  const screenCastWindow = new electron.BrowserWindow(windowOptions);
+
+  var positioner = new Positioner(screenCastWindow)
   positioner.move(position)
 
-  window.loadURL(url)
+  screenCastWindow.loadURL(url)
 
   // Show window when page is ready
-  window.once('ready-to-show', function () {
-    window.show();
-    window.focus();
+  screenCastWindow.once('ready-to-show', function () {
+    screenCastWindow.show();
+    screenCastWindow.focus();
   });
 
-  window.on("closed", function() {
-    window = null;
-  });
 });
 

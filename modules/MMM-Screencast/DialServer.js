@@ -36,14 +36,6 @@ var apps = {
 			child.on('close', function(code) {
 			    console.log('closing code: ' + code);
 			});
-			// ipc.connectTo('screenCastWindow',() => {
-			// 	ipc.of.screenCastWindow.on('connect',() => {
-   //          		ipc.of.screenCastWindow.emit('set_mainWindow', { mainWindow: mainWindow });
-   //      		});
-   //      		ipc.of.screenCastWindow.on('quit', () => {
-   //      			ipc.disconnect('screenCastWindow');
-   //      		});
-			// });
     	}
 	}
 };
